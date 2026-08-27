@@ -1,0 +1,62 @@
+// Using topo sort
+class Solution {
+    private void dfs(int node,int visit[], ArrayList<ArrayList<int[]>> adj,
+    Stack<Integer> st){
+        visit[node]=1;
+        for(int i=0;i<adj.get(node).size();i++){
+            int v=adj.get(node).get(i)[0];
+            if(visit[v]!=1){
+                dfs(v,visit,adj,st);
+            }
+        }
+        st.push(node);
+    }
+    public ArrayList<Integer> shortestPath(int V, int[][] edges) {
+        // Code here
+        ArrayList<ArrayList<int[]>> adj=new ArrayList<>();
+        
+        for(int i=0;i<V;i++){
+            adj.add(new ArrayList<>());
+        }
+        
+        for(int edge[]:edges){
+            int u=edge[0];
+            int v=edge[1];
+            int wt=edge[2];
+            
+            adj.get(u).add(new int[]{v,wt});
+        }
+        
+        int visit[]=new int[V];
+        Stack<Integer> st=new Stack<>();
+        for(int i=0;i<V;i++){
+            if(visit[i]!=1){
+                dfs(i,visit,adj,st);
+            }
+        }
+        
+        ArrayList<Integer> ans=new ArrayList<>();
+        for(int i=0;i<V;i++){
+            ans.add(Integer.MAX_VALUE);
+        }
+        ans.set(0,0);
+        while(!st.isEmpty()){
+            int num=st.pop();
+            for(int a[]:adj.get(num)){
+                int v=a[0];
+                int wt=a[1];
+                if(ans.get(num) != Integer.MAX_VALUE && ans.get(num)+wt < ans.get(v)){
+                    ans.set(v,ans.get(num)+wt);
+                }
+            }
+        }
+        
+        for(int i = 0; i < V; i++){
+            if(ans.get(i) == Integer.MAX_VALUE){
+                ans.set(i, -1);
+            }
+        }
+        
+        return ans;
+    }
+}
